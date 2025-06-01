@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Post Management System</title>
+    <style>
+        body { margin: 20px; font-family: Arial, sans-serif; }
+        .form-group { margin: 10px 0; }
+        label { display: inline-block; width: 100px; }
+        button { margin: 5px; }
+        #results { margin-top: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Post Management System</h1>
+    
+    <div class="form-group">
+        <label for="id">ID:</label>
+        <input type="number" id="id">
+    </div>
+    <div class="form-group">
+        <label for="email">Email:</label>
+        <input type="email" id="email">
+    </div>
+    <div class="form-group">
+        <label for="passcode">Passcode:</label>
+        <input type="number" id="passcode">
+    </div>
+    <div class="form-group">
+        <label for="active">Active:</label>
+        <input type="checkbox" id="active">
+    </div>
+    <div class="form-group">
+        <label for="ecCode">EC Code:</label>
+        <input type="number" id="ecCode">
+    </div>
+    <div class="form-group">
+        <label for="bjValue">BJ Value:</label>
+        <input type="text" id="bjValue">
+    </div>
+
+    <div>
+        <button onclick="getAllPosts()">Get All Posts</button>
+        <button onclick="getPost()">Get Post by ID</button>
+        <button onclick="createPost()">Create Post</button>
+        <button onclick="updatePost()">Update Post</button>
+        <button onclick="deletePost()">Delete Post</button>
+        <button onclick="getPostsByBjValue()">Search by BJ Value</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const baseUrl = '/posts';
+
+        async function getAllPosts() {
+            const response = await fetch(baseUrl);
+            displayResults(await response.json());
+        }
+
+        async function getPost() {
+            const id = document.getElementById('id').value;
+            const response = await fetch(`${baseUrl}/${id}`);
+            displayResults(await response.json());
+        }
+
+        async function createPost() {
+            const post = getPostFromForm();
+            const response = await fetch(baseUrl, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(post)
+            });
+            displayResults(await response.json());
+        }
+
+        async function updatePost() {
+            const id = document.getElementById('id').value;
+            const post = getPostFromForm();
+            const response = await fetch(`${baseUrl}/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(post)
+            });
+            displayResults(await response.json());
+        }
+
+        async function deletePost() {
+            const id = document.getElementById('id').value;
+            const response = await fetch(`${baseUrl}/${id}`, {
+                method: 'DELETE'
+            });
+            displayResults(await response.text());
+        }
+
+        async function getPostsByBjValue() {
+            const bjValue = document.getElementById('bjValue').value;
+            const response = await fetch(`${baseUrl}/bjValue/${bjValue}`);
+            displayResults(await response.json());
+        }
+
+        function getPostFromForm() {
+            return {
+                email: document.getElementById('email').value,
+                passcode: parseInt(document.getElementById('passcode').value),
+                active: document.getElementById('active').checked,
+                ecCode: parseInt(document.getElementById('ecCode').value),
+                bjValue: document.getElementById('bjValue').value
+            };
+        }
+
+        function displayResults(data) {
+            document.getElementById('results').innerHTML = 
+                '<pre>' + JSON.stringify(data, null, 2) + '</pre>';
+        }
+    </script>
+</body>
+</html>
