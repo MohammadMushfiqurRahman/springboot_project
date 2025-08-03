@@ -2,49 +2,49 @@
 
 A comprehensive demo project showcasing Spring Boot REST API development with full CRUD operations, built for learning and demonstration purposes. This application features a complete Post management system with both programmatic API access and an interactive web interface.
 
-## System Architecture
+## 🏗 System Architecture
 
-```mermaid
-graph TB
-    subgraph "Client Layer"
-        WEB[Web Browser<br/>HTML Interface]
-        API[API Client<br/>curl/Postman]
-    end
-    
-    subgraph "Spring Boot Application"
-        CTRL[PostController<br/>@RestController]
-        SVC[Business Logic<br/>Service Layer]
-        REPO[PostRepository<br/>JpaRepository]
-    end
-    
-    subgraph "Data Layer"
-        H2[(H2 Database<br/>In-Memory)]
-        CONSOLE[H2 Console<br/>Web Interface]
-    end
-    
-    subgraph "Configuration"
-        CONFIG[application.properties<br/>Database Config]
-        INIT[DatabaseConfig<br/>Sample Data]
-    end
-    
-    WEB -->|HTTP Requests| CTRL
-    API -->|REST API Calls| CTRL
-    CTRL -->|CRUD Operations| SVC
-    SVC -->|Data Access| REPO
-    REPO -->|JPA/Hibernate| H2
-    CONSOLE -->|Direct Access| H2
-    CONFIG -->|Configuration| H2
-    INIT -->|Sample Data| REPO
-    
-    classDef client fill:#e1f5fe
-    classDef spring fill:#f3e5f5
-    classDef data fill:#e8f5e8
-    classDef config fill:#fff3e0
-    
-    class WEB,API client
-    class CTRL,SVC,REPO spring
-    class H2,CONSOLE data
-    class CONFIG,INIT config
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                        CLIENT LAYER                             │
+├─────────────────────────┬───────────────────────────────────────┤
+│   Web Browser           │        API Clients                    │
+│   (HTML Interface)      │     (curl/Postman/etc)               │
+└─────────────┬───────────┴──────────────┬────────────────────────┘
+              │                          │
+              │        HTTP Requests     │
+              │                          │
+┌─────────────▼──────────────────────────▼────────────────────────┐
+│                   SPRING BOOT APPLICATION                       │
+├─────────────────────────────────────────────────────────────────┤
+│                    PostController                               │
+│                   (@RestController)                             │
+│                          │                                      │
+│                          ▼                                      │
+│                   Business Logic                                │
+│                   (Service Layer)                               │
+│                          │                                      │
+│                          ▼                                      │
+│                   PostRepository                                │
+│                  (JpaRepository)                                │
+└─────────────────────────┬───────────────────────────────────────┘
+                          │
+                          │ JPA/Hibernate
+                          ▼
+┌─────────────────────────────────────────────────────────────────┐
+│                      DATA LAYER                                 │
+├─────────────────────────┬───────────────────────────────────────┤
+│     H2 Database         │         H2 Console                    │
+│    (In-Memory)          │      (Web Interface)                  │
+└─────────────────────────┴───────────────────────────────────────┘
+                          ▲
+                          │
+┌─────────────────────────┴───────────────────────────────────────┐
+│                   CONFIGURATION                                 │
+├─────────────────────────┬───────────────────────────────────────┤
+│  application.properties │      DatabaseConfig.java             │
+│   (Database Config)     │      (Sample Data)                    │
+└─────────────────────────┴───────────────────────────────────────┘
 ```
 
 ## 🚀 Features
@@ -134,54 +134,34 @@ Base URL: `http://localhost:8081`
 
 ### API Flow Diagram
 
-```mermaid
-graph LR
-    subgraph "HTTP Methods"
-        GET[GET Requests]
-        POST[POST Requests]
-        PUT[PUT Requests]
-        DELETE[DELETE Requests]
-    end
-    
-    subgraph "API Endpoints"
-        ALL["/posts<br/>Get All Posts"]
-        BYID["/posts/{id}<br/>Get Post by ID"]
-        BYBJ["/posts/bjValue/{bjValue}<br/>Search by BJ Value"]
-        CREATE["/posts<br/>Create Post"]
-        UPDATE["/posts/{id}<br/>Update Post"]
-        DEL["/posts/{id}<br/>Delete Post"]
-    end
-    
-    subgraph "Responses"
-        SUCCESS[200/201 Success<br/>JSON Response]
-        ERROR[404/500 Error<br/>Error Message]
-    end
-    
-    GET --> ALL
-    GET --> BYID
-    GET --> BYBJ
-    POST --> CREATE
-    PUT --> UPDATE
-    DELETE --> DEL
-    
-    ALL --> SUCCESS
-    BYID --> SUCCESS
-    BYID --> ERROR
-    BYBJ --> SUCCESS
-    CREATE --> SUCCESS
-    CREATE --> ERROR
-    UPDATE --> SUCCESS
-    UPDATE --> ERROR
-    DEL --> SUCCESS
-    DEL --> ERROR
-    
-    classDef method fill:#e3f2fd
-    classDef endpoint fill:#f1f8e9
-    classDef response fill:#fce4ec
-    
-    class GET,POST,PUT,DELETE method
-    class ALL,BYID,BYBJ,CREATE,UPDATE,DEL endpoint
-    class SUCCESS,ERROR response
+```
+HTTP METHODS                 API ENDPOINTS                    RESPONSES
+┌─────────────┐             ┌──────────────────────────┐     ┌─────────────────┐
+│             │             │                          │     │                 │
+│    GET      │────────────▶│  /posts                  │────▶│  200 Success    │
+│             │             │  (Get All Posts)         │     │  JSON Response  │
+│             │             │                          │     │                 │
+│             │────────────▶│  /posts/{id}             │────▶│  200 Success    │
+│             │             │  (Get Post by ID)        │     │  404 Not Found  │
+│             │             │                          │     │                 │
+│             │────────────▶│  /posts/bjValue/{value}  │────▶│  200 Success    │
+│             │             │  (Search by BJ Value)    │     │                 │
+└─────────────┘             │                          │     │                 │
+┌─────────────┐             │                          │     │                 │
+│             │             │                          │     │                 │
+│    POST     │────────────▶│  /posts                  │────▶│  201 Created    │
+│             │             │  (Create Post)           │     │  500 Error      │
+└─────────────┘             │                          │     │                 │
+┌─────────────┐             │                          │     │                 │
+│             │             │                          │     │                 │
+│    PUT      │────────────▶│  /posts/{id}             │────▶│  200 Success    │
+│             │             │  (Update Post)           │     │  404 Not Found  │
+└─────────────┘             │                          │     │                 │
+┌─────────────┐             │                          │     │                 │
+│             │             │                          │     │                 │
+│   DELETE    │────────────▶│  /posts/{id}             │────▶│  200 Success    │
+│             │             │  (Delete Post)           │     │  404 Not Found  │
+└─────────────┘             └──────────────────────────┘     └─────────────────┘
 ```
 
 ### Endpoints Overview
