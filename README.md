@@ -2,7 +2,7 @@
 
 A comprehensive demo project showcasing Spring Boot REST API development with full CRUD operations, built for learning and demonstration purposes. This application features a complete Post management system with both programmatic API access and an interactive web interface.
 
-## 🏗 System Architecture
+## System Architecture
 
 ```mermaid
 graph TB
